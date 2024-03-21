@@ -20,20 +20,23 @@ router
 
       // reduce method iterates over the commentsWithReplies array and groups comments with their associated replies.
       const comments = commentsWithReplies.reduce((acc, row) => {
-        // if 
+        // if there isn't already an entry for that row, then we add it to the accumulator
         if (!acc[row.comment_id]) {
-          // Create a new entry for the comment if it doesn't exist
+          // Create a new entry for the comment if it doesn't already exist
+          // populate the entry with info from the corresponding row 
           acc[row.comment_id] = {
             comment_id: row.comment_id,
             username: row.username,
             comment_text: row.comment_text,
             likes_count: row.likes_count,
             timestamp: row.timestamp,
+            // create a replies array that the replies will be pushed into 
             replies: [],
           };
         }
 
-        // Add reply to the corresponding comment
+        // check if that same row has an associated reply (reply_id)
+        // Add reply to the corresponding comment by pushing it to the replies array of the comment 
         if (row.reply_id) {
           acc[row.comment_id].replies.push({
             reply_id: row.reply_id,
@@ -46,10 +49,10 @@ router
         return acc;
       }, {});
 
-
-
-      // const data = await knex('comments');
+    // convert the accumulator object (comments) into an array of comment objects before sending the response.
+    // this is because client side will usually expect an array of objects to work with
     res.status(200).json(Object.values(comments));
+
     } catch(err) {
       res.status(400).send(`Error retrieving Comments: ${err}`);
     }
