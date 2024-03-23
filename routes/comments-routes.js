@@ -8,4 +8,6 @@ router
 
   .get(commentsController.fetchComments)
 
+  .post(commentsController.postComment)
+
 module.exports = router;

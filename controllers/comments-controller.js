@@ -53,6 +53,30 @@ const fetchComments = async ( req, res ) => {
       }
 }
 
+const postComment = async (req, res) => {
+    try {
+        // console.log(req.body)
+
+        const newComment = {
+            username: req.body.username,
+            comment_text: req.body.comment_text
+        }
+        const result = await knex("comments").insert(newComment);
+        const newCommentId = result[0];
+        const createdComment = await knex("comments").where({
+            comment_id: newCommentId,
+        }).first();
+
+        res.status(201).json(createdComment);
+    } catch (error) {
+        res.status(500).json({
+            message: `Unable to post new comment: ${error}`,
+        })
+        // console.error(err);
+    }
+}
+
 module.exports = {
-    fetchComments
+    fetchComments,
+    postComment
 }
