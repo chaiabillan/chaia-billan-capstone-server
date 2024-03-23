@@ -10,4 +10,8 @@ router
 
   .post(commentsController.postComment)
 
+router
+  .route('/:id')
+  .delete(commentsController.deleteComment)
+
 module.exports = router;

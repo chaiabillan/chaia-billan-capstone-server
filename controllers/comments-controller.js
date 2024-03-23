@@ -76,7 +76,35 @@ const postComment = async (req, res) => {
     }
 }
 
+const deleteComment = async (req, res) => {
+    try {
+
+        const commentId = req.params.id;
+        console.log(commentId);
+        const commentExists = await knex("comments")
+            .where({comment_id: commentId})
+            .first();
+        
+            if(!commentExists) {
+                return res 
+                    .status(404)
+                    .json({message: `Comment with id ${commentId} not found`});
+            }
+
+            await knex("comments")
+                .where({comment_id: commentId})
+                .del();
+
+            res.sendStatus(204);
+    } catch(error) {
+        res.status(500).json({
+            message:`Unable to delete comment: ${error}`
+        })
+    }
+}
+
 module.exports = {
     fetchComments,
-    postComment
+    postComment,
+    deleteComment
 }
