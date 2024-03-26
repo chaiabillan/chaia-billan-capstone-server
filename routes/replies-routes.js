@@ -16,6 +16,8 @@ router
 
     .route('/:commentId/:replyId')
 
-    .delete(repliesController.deleteReply);
+    .delete(repliesController.deleteReply)
+
+    .put(repliesController.likeReply);
 
 module.exports = router;

@@ -72,7 +72,46 @@ const deleteReply = async (req, res) => {
     }
 }
 
+const likeReply = async (req, res) => {
+    try {
+        const { commentId, replyId } = req.params;
+        const commentExists = await knex("comments")
+            .where({comment_id: commentId})
+            .first();
+
+            if (!commentExists) {
+                return res 
+                    .status(404)
+                    .json({message: `Comment with id ${commentId} not found`});
+            }
+        
+        const replyExists = await knex("replies")
+            .where({ comment_id: commentId, reply_id: replyId })
+            .first();
+
+            if (!replyExists) {
+                return res.status(404).json({ message: `Reply with id ${replyId} not found for comment ${commentId}` });
+            }
+
+
+            await knex("replies")
+                .where({ comment_id: commentId, reply_id: replyId })
+                .increment("likes_count", 1);
+
+            const updatedReply = await knex("replies")
+                .where({comment_id: commentId, reply_id: replyId})
+                .first();
+
+            res.json(updatedReply);
+            
+    } catch (error) {
+        res.status(500).json({ message: `Unable to like comment: ${error}` });
+
+    }
+}
+
 module.exports = {
     postReply,
-    deleteReply
+    deleteReply,
+    likeReply
 }

@@ -103,8 +103,38 @@ const deleteComment = async (req, res) => {
     }
 }
 
+const likeComment = async (req, res) => {
+    try {
+        const commentId = req.params.id;
+        console.log(commentId);
+        const commentExists = await knex("comments")
+            .where({comment_id: commentId})
+            .first();
+
+            if(!commentExists) {
+                return res 
+                    .status(404)
+                    .json({message: `Comment with id ${commentId} not found`});
+            }
+
+            await knex("comments")
+                .where({comment_id: commentId})
+                .increment("likes_count", 1);
+
+            const updatedComment = await knex("comments")
+                .where({ comment_id: commentId })
+                .first();
+    
+            res.json(updatedComment);
+                
+    } catch(error) {
+        res.status(500).json({ message: `Unable to like comment: ${error}` });
+    }
+}
+
 module.exports = {
     fetchComments,
     postComment,
-    deleteComment
+    deleteComment, 
+    likeComment
 }

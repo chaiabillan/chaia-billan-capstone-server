@@ -13,5 +13,7 @@ router
 router
   .route('/:id')
   .delete(commentsController.deleteComment)
+  .put(commentsController.likeComment)
+  
 
 module.exports = router;
