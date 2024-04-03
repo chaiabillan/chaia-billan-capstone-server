@@ -6,12 +6,12 @@ const fetchComments = async ( req, res ) => {
         const commentsWithReplies = await knex('Comments')
           // select all the rows from the comments table and then replies table 
           .select('Comments.comment_id', 'Comments.username', 'Comments.comment_text', 'Comments.likes_count', 'Comments.timestamp',
-                  'replies.reply_id', 'replies.username AS reply_username', 'replies.reply_text', 'replies.likes_count AS reply_likes_count', 'replies.timestamp AS reply_timestamp')
+                  'Replies.reply_id', 'Replies.username AS reply_username', 'Replies.reply_text', 'Replies.likes_count AS reply_likes_count', 'Replies.timestamp AS reply_timestamp')
           // joins together the replies table and the comments table 
           // retrieves everything from the left table (comments, because this is where everything is accumulated) regardless of whether anything correspondds in the right (replies) table
           // comments.comment_id indicates that the join should be based on the comment_id column of the comments table 
           // replies.comment_id indicates that the join should be based on the comment_id column of the replies table
-          .leftJoin('replies', 'Comments.comment_id', 'replies.comment_id');
+          .leftJoin('Replies', 'Comments.comment_id', 'Replies.comment_id');
   
         // reduce method iterates over the commentsWithReplies array and groups comments with their associated replies.
         const comments = commentsWithReplies.reduce((acc, row) => {
@@ -61,9 +61,9 @@ const postComment = async (req, res) => {
             username: req.body.username,
             comment_text: req.body.comment_text
         }
-        const result = await knex("comments").insert(newComment);
+        const result = await knex("Comments").insert(newComment);
         const newCommentId = result[0];
-        const createdComment = await knex("comments").where({
+        const createdComment = await knex("Comments").where({
             comment_id: newCommentId,
         }).first();
 
@@ -81,7 +81,7 @@ const deleteComment = async (req, res) => {
 
         const commentId = req.params.id;
         console.log(commentId);
-        const commentExists = await knex("comments")
+        const commentExists = await knex("Comments")
             .where({comment_id: commentId})
             .first();
         
@@ -91,7 +91,7 @@ const deleteComment = async (req, res) => {
                     .json({message: `Comment with id ${commentId} not found`});
             }
 
-            await knex("comments")
+            await knex("Comments")
                 .where({comment_id: commentId})
                 .del();
 
@@ -107,7 +107,7 @@ const likeComment = async (req, res) => {
     try {
         const commentId = req.params.id;
         console.log(commentId);
-        const commentExists = await knex("comments")
+        const commentExists = await knex("Comments")
             .where({comment_id: commentId})
             .first();
 
@@ -117,11 +117,11 @@ const likeComment = async (req, res) => {
                     .json({message: `Comment with id ${commentId} not found`});
             }
 
-            await knex("comments")
+            await knex("Comments")
                 .where({comment_id: commentId})
                 .increment("likes_count", 1);
 
-            const updatedComment = await knex("comments")
+            const updatedComment = await knex("Comments")
                 .where({ comment_id: commentId })
                 .first();
     

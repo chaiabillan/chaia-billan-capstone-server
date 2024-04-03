@@ -5,7 +5,7 @@ const postReply = async (req, res) => {
         const { commentId, username, replyText } = req.body;
 
         // Check if the comment exists
-        const commentExists = await knex("comments")
+        const commentExists = await knex("Comments")
             .where({ comment_id: commentId })
             .first();
 
@@ -23,9 +23,9 @@ const postReply = async (req, res) => {
             reply_text: replyText,
         };
 
-        const result = await knex("replies").insert(newReply);
+        const result = await knex("Replies").insert(newReply);
         const newReplyId = result[0];
-        const createdReply = await knex("replies").where({
+        const createdReply = await knex("Replies").where({
             reply_id: newReplyId,
         }).first();
 
@@ -41,7 +41,7 @@ const deleteReply = async (req, res) => {
     try {
         const { commentId, replyId } = req.params;
 
-        const commentExists = await knex("comments")
+        const commentExists = await knex("Comments")
             .where({comment_id: commentId})
             .first();
 
@@ -51,7 +51,7 @@ const deleteReply = async (req, res) => {
                     .json({message: `Comment with id ${commentId} not found`});
             }
         
-        const replyExists = await knex("replies")
+        const replyExists = await knex("Replies")
             .where({ comment_id: commentId, reply_id: replyId })
             .first();
 
@@ -60,7 +60,7 @@ const deleteReply = async (req, res) => {
             }
 
 
-            await knex("replies")
+            await knex("Replies")
                 .where({ comment_id: commentId, reply_id: replyId })
                 .del();
 
