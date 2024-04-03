@@ -75,7 +75,7 @@ const deleteReply = async (req, res) => {
 const likeReply = async (req, res) => {
     try {
         const { commentId, replyId } = req.params;
-        const commentExists = await knex("comments")
+        const commentExists = await knex("Comments")
             .where({comment_id: commentId})
             .first();
 
@@ -85,7 +85,7 @@ const likeReply = async (req, res) => {
                     .json({message: `Comment with id ${commentId} not found`});
             }
         
-        const replyExists = await knex("replies")
+        const replyExists = await knex("Replies")
             .where({ comment_id: commentId, reply_id: replyId })
             .first();
 
@@ -94,11 +94,11 @@ const likeReply = async (req, res) => {
             }
 
 
-            await knex("replies")
+            await knex("Replies")
                 .where({ comment_id: commentId, reply_id: replyId })
                 .increment("likes_count", 1);
 
-            const updatedReply = await knex("replies")
+            const updatedReply = await knex("Replies")
                 .where({comment_id: commentId, reply_id: replyId})
                 .first();
 
